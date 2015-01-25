@@ -4,7 +4,7 @@ require 'uri'
 module RemoteAsset
     class Generator < Jekyll::Generator
         def generate(site)
-            flow = DropboxOAuth2FlowNoRedirect.new(APP_KEY, APP_SECRET)
+            flow = DropboxOAuth2FlowNoRedirect.new(site.config["remote_assets"]["app_key"], site.config["remote_assets"]["app_secret"])
             authorize_url = flow.start
 
             puts '1. Go to: ' + authorize_url
@@ -26,9 +26,9 @@ module RemoteAsset
                     response = Dropbox::parse_response(response)
                     uri = URI(response["url"])
                     site.remote_assets[name] =  "dl.dropboxusercontent.com#{ uri.path }"
-                rescue
-                    puts 'Error'
-                end
+                # rescue
+                #    puts 'Error'
+                #end
             end
         end
     end
