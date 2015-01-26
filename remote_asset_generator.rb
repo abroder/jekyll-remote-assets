@@ -19,16 +19,16 @@ module RemoteAsset
             session = DropboxOAuth2Session.new(access_token, nil)
             
             files = Dir.glob("_assets/**/*") do |e|
-                # begin
+                begin
                     name = e[e.index('/')..-1]
                     file = client.put_file(name, open(e)) if File.file?(e)
                     response = session.do_get "/shares/auto/#{client.format_path(file['path'])}", {"short_url"=>false}
                     response = Dropbox::parse_response(response)
                     uri = URI(response["url"])
-                    site.remote_assets[name] =  "dl.dropboxusercontent.com#{ uri.path }"
-                # rescue
-                #    puts 'Error'
-                #end
+                    site.remote_assets[name[1..-1]] =  "http://dl.dropboxusercontent.com#{ uri.path }"
+                rescue
+                   puts 'Error'
+                end
             end
         end
     end
