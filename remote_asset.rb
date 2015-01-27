@@ -8,9 +8,6 @@ module Jekyll
         end
 
         def render(context)
-        	puts "#{ @asset_name  == context.registers[:site].remote_assets.keys[0]}"
-        	puts "#{ context.registers[:site].remote_assets }"
-        	puts "#{ context.registers[:site].remote_assets[@asset_name] }"
             "#{ context.registers[:site].remote_assets[@asset_name] }"
         end
     end
