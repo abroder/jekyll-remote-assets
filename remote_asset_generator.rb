@@ -21,7 +21,7 @@ module RemoteAsset
             files = Dir.glob("_assets/**/*") do |e|
                 begin
                     name = e[e.index('/')..-1]
-                    file = client.put_file(name, open(e)) if File.file?(e)
+                    file = client.put_file(name, open(e), true) if File.file?(e)
                     response = session.do_get "/shares/auto/#{client.format_path(file['path'])}", {"short_url"=>false}
                     response = Dropbox::parse_response(response)
                     uri = URI(response["url"])
