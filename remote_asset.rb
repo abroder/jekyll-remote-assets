@@ -1,5 +1,3 @@
-require 'dropbox_sdk'
-
 module Jekyll
     class RemoteAssetTag < Liquid::Tag
         def initialize(tag_name, asset_name, tokens) 
