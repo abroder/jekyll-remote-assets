@@ -72,10 +72,11 @@ module RemoteAsset
       files = Dir.glob("_assets/**/*") do |filename|
         # begin
           name = filename[filename.index('/')..-1]
+          overwrite = plugin_config['overwrite'] || true
           puts name
           File.open(filename) do |f|
             # upload the file
-            response = Unirest.put FILES_PUT_URL + name,
+            response = Unirest.put FILES_PUT_URL + name + "?overwrite=#{ overwrite }",
               headers: {"Authorization" => build_oauth1_header(@oauth_config[:app_key], @oauth_config[:app_secret], @oauth_config[:access_token], @oauth_config[:access_token_secret]),
                         "Content-Length" => File::size(f),
                         "Content-Type" => "text/plain"},
