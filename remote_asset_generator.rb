@@ -11,7 +11,6 @@ module RemoteAsset
     def config_oauth(plugin_config)
       @oauth_config = {}
       config_file = plugin_config["config"] || ".remote_assets_config"
-      puts config_file
       if not File.exist?(config_file)
           puts "1. Please enter your app key. "
           @oauth_config[:app_key] = $stdin.gets.strip
@@ -73,7 +72,7 @@ module RemoteAsset
         # begin
           name = filename[filename.index('/')..-1]
           overwrite = plugin_config['overwrite'] || true
-          puts name
+
           File.open(filename) do |f|
             # upload the file
             response = Unirest.put FILES_PUT_URL + name + "?overwrite=#{ overwrite }",
@@ -93,8 +92,6 @@ module RemoteAsset
         # rescue
          # puts 'Error'
        # end
-
-       puts site.remote_assets
      end
    end
  end
