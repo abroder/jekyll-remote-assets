@@ -5,8 +5,8 @@ module RemoteAsset
   class Generator < Jekyll::Generator
     REQUEST_TOKEN_URL = "https://api.dropbox.com/1/oauth/request_token"
     ACCESS_TOKEN_URL = "https://api.dropbox.com/1/oauth/access_token"
-    FILES_PUT_URL = "https://api-content.dropbox.com/1/files_put/auto/"
-    SHARES_URL = "https://api.dropbox.com/1/shares/auto/"
+    FILES_PUT_URL = "https://api-content.dropbox.com/1/files_put/auto"
+    SHARES_URL = "https://api.dropbox.com/1/shares/auto"
 
     def config_oauth(site)
       @config = {}
