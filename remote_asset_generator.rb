@@ -10,7 +10,7 @@ module RemoteAsset
 
     def config_oauth(plugin_config)
       @oauth_config = {}
-      config_file = plugin_config["config"] || ".remote_assets_config"
+      config_file = (plugin_config && plugin_config["config"]) || __dir__ + "/.remote_assets_config"
       if not File.exist?(config_file)
           puts "1. Please enter your app key. "
           @oauth_config[:app_key] = $stdin.gets.strip
