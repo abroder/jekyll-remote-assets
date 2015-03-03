@@ -44,6 +44,22 @@ module RemoteAsset
       end
     end
 
+    def init_cache(plugin_config)
+      @cache = {}
+      cache_file = plugin_config["cache"] || __dir__ + "/.remote_assets_cache"
+
+      # TODO: fix first-time set up of cache
+      if not File.exist?(cache_file)
+        File.open(cache_file, 'w+') do |f|
+          YAML.dump(@cache, f)
+        end
+      end
+
+      File.open(cache_file) do |f|
+        @cache = YAML.load_file(f)
+      end
+    end
+
     def nonce(size = 7)
       Base64.encode64(OpenSSL::Random.random_bytes(size)).gsub(/\W/, '')
     end
@@ -67,6 +83,7 @@ module RemoteAsset
     def generate(site)
       plugin_config = site.config["remote_assets"] || {}
       config_oauth(plugin_config)
+      init_cache(plugin_config)
 
       files = Dir.glob("_assets/**/*") do |filename|
         # begin
@@ -74,6 +91,13 @@ module RemoteAsset
           overwrite = plugin_config['overwrite'] || true
 
           File.open(filename) do |f|
+            md5 = Digest::MD5.file(filename).hexdigest
+            next if @cache[filename] and @cache[filename] == md5
+
+            puts "#{ filename } wasn't cached."
+
+            @cache[filename] = md5
+
             # upload the file
             response = Unirest.put FILES_PUT_URL + name + "?overwrite=#{ overwrite }",
               headers: {"Authorization" => build_oauth1_header(@oauth_config[:app_key], @oauth_config[:app_secret], @oauth_config[:access_token], @oauth_config[:access_token_secret]),
@@ -88,6 +112,11 @@ module RemoteAsset
 
             uri = URI(response.body["url"])
             site.remote_assets[name[1..-1]] =  "http://dl.dropboxusercontent.com#{ uri.path }"
+          end
+
+          # TODO: clean up file saving
+          File.open(plugin_config["cache"] || __dir__ + "/.remote_assets_cache", 'w+') do |f|
+            YAML.dump(@cache, f)
           end
         # rescue
          # puts 'Error'
