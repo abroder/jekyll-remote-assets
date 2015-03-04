@@ -87,6 +87,8 @@ module RemoteAsset
 
       files = Dir.glob("_assets/**/*") do |filename|
         # begin
+          next if File.directory?(filename)
+
           name = filename[filename.index('/')..-1]
           overwrite = plugin_config['overwrite'] || true
 
