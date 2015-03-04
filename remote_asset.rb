@@ -6,7 +6,8 @@ module Jekyll
         end
 
         def render(context)
-            "#{ context.registers[:site].remote_assets[@asset_name] }"
+          puts context.registers[:site].remote_assets
+          "#{ context.registers[:site].remote_assets[@asset_name] }"
         end
     end
 end

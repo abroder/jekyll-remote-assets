@@ -94,11 +94,12 @@ module RemoteAsset
 
           File.open(filename) do |f|
             md5 = Digest::MD5.file(filename).hexdigest
-            next if @cache[filename] and @cache[filename] == md5
+            if @cache[filename] and @cache[filename][:md5] == md5
+              site.remote_assets[name[1..name.length]] = @cache[filename][:url]
+              next
+            end
 
             puts "#{ filename } wasn't cached."
-
-            @cache[filename] = md5
 
             # upload the file
             response = Unirest.put FILES_PUT_URL + name + "?overwrite=#{ overwrite }",
@@ -114,6 +115,8 @@ module RemoteAsset
 
             uri = URI(response.body["url"])
             site.remote_assets[name[1..-1]] =  "http://dl.dropboxusercontent.com#{ uri.path }"
+            
+            @cache[filename] = { md5: md5, url: "http://dl.dropboxusercontent.com#{ uri.path }"}
           end
 
           # TODO: clean up file saving
