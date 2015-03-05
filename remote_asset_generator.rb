@@ -6,6 +6,7 @@ module RemoteAsset
     REQUEST_TOKEN_URL = "https://api.dropbox.com/1/oauth/request_token"
     ACCESS_TOKEN_URL = "https://api.dropbox.com/1/oauth/access_token"
     FILES_PUT_URL = "https://api-content.dropbox.com/1/files_put/auto"
+    FILE_METADATA_URL = "https://api.dropbox.com/1/metadata/auto"
     SHARES_URL = "https://api.dropbox.com/1/shares/auto"
 
     def config_oauth(plugin_config)
@@ -95,8 +96,14 @@ module RemoteAsset
           File.open(filename) do |f|
             md5 = Digest::MD5.file(filename).hexdigest
             if @cache[filename] and @cache[filename][:md5] == md5
-              site.remote_assets[name[1..name.length]] = @cache[filename][:url]
-              next
+              # if it's cached, make sure the file is still in the Dropbox drive
+              response = Unirest.get FILE_METADATA_URL + name,
+                headers: {"Authorization" => build_oauth1_header(@oauth_config[:app_key], @oauth_config[:app_secret], @oauth_config[:access_token], @oauth_config[:access_token_secret])}
+
+              if response.body["error"] == nil && !response.body["is_deleted"]
+                site.remote_assets[name[1..name.length]] = @cache[filename][:url]
+                next
+              end
             end
 
             puts "#{ filename } wasn't cached."
