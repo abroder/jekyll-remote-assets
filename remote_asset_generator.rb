@@ -13,31 +13,31 @@ module RemoteAsset
       @oauth_config = {}
       config_file = plugin_config["config"] || __dir__ + "/.remote_assets_config"
       if not File.exist?(config_file)
-          puts "1. Please enter your app key. "
-          @oauth_config[:app_key] = $stdin.gets.strip
+        puts "1. Please enter your app key. "
+        @oauth_config[:app_key] = $stdin.gets.strip
 
-          puts "2. Please enter your app secret. "
-          @oauth_config[:app_secret] = $stdin.gets.strip
+        puts "2. Please enter your app secret. "
+        @oauth_config[:app_secret] = $stdin.gets.strip
 
-          response = Unirest.post REQUEST_TOKEN_URL,
-            headers: { "Authorization" => build_oauth1_header(@oauth_config[:app_key], @oauth_config[:app_secret]) }
+        response = Unirest.post REQUEST_TOKEN_URL,
+          headers: { "Authorization" => build_oauth1_header(@oauth_config[:app_key], @oauth_config[:app_secret]) }
 
-          request_tokens = CGI::parse(response.body)
+        request_tokens = CGI::parse(response.body)
 
-          puts "3. Visit https://www.dropbox.com/1/oauth/authorize?oauth_token=#{ request_tokens['oauth_token'][0] } and approve this app. Press enter when finished."
-          $stdin.gets
+        puts "3. Visit https://www.dropbox.com/1/oauth/authorize?oauth_token=#{ request_tokens['oauth_token'][0] } and approve this app. Press enter when finished."
+        $stdin.gets
 
-          response = Unirest.post ACCESS_TOKEN_URL,
-            headers: {"Authorization" => build_oauth1_header(@oauth_config[:app_key], @oauth_config[:app_secret], request_tokens['oauth_token'][0], request_tokens['oauth_token_secret'][0]) }
+        response = Unirest.post ACCESS_TOKEN_URL,
+          headers: {"Authorization" => build_oauth1_header(@oauth_config[:app_key], @oauth_config[:app_secret], request_tokens['oauth_token'][0], request_tokens['oauth_token_secret'][0]) }
 
-          access_tokens = CGI::parse(response.body)
+        access_tokens = CGI::parse(response.body)
 
-          @oauth_config[:access_token] = access_tokens['oauth_token'][0]
-          @oauth_config[:access_token_secret] =  access_tokens['oauth_token_secret'][0]
+        @oauth_config[:access_token] = access_tokens['oauth_token'][0]
+        @oauth_config[:access_token_secret] =  access_tokens['oauth_token_secret'][0]
 
-          File.open(config_file, 'w+') do |f|
-            YAML.dump(@oauth_config, f)
-          end
+        File.open(config_file, 'w+') do |f|
+          YAML.dump(@oauth_config, f)
+        end
       else
         File.open(config_file) do |f|
           @oauth_config = YAML.load_file(f)
