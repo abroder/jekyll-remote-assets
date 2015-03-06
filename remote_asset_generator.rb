@@ -89,7 +89,7 @@ module RemoteAsset
       config_oauth(plugin_config)
       init_cache(plugin_config)
 
-      files = Dir.glob("_assets/**/*") do |filename|
+      Dir.glob("_assets/**/*") do |filename|
         # begin
           next if File.directory?(filename)
 
