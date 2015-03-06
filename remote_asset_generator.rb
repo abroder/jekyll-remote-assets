@@ -13,10 +13,13 @@ module RemoteAsset
       @oauth_config = {}
       config_file = plugin_config["config"] || __dir__ + "/.remote_assets_config"
       if not File.exist?(config_file)
-        puts "1. Please enter your app key. "
+        puts "1. Create a new application on the Dropbox App Console, if you haven't already: https://www.dropbox.com/developers/apps"
+        $stdin.gets
+
+        puts "2. Please enter your app key. "
         @oauth_config[:app_key] = $stdin.gets.strip
 
-        puts "2. Please enter your app secret. "
+        puts "3. Please enter your app secret. "
         @oauth_config[:app_secret] = $stdin.gets.strip
 
         response = Unirest.post REQUEST_TOKEN_URL,
@@ -24,7 +27,7 @@ module RemoteAsset
 
         request_tokens = CGI::parse(response.body)
 
-        puts "3. Visit https://www.dropbox.com/1/oauth/authorize?oauth_token=#{ request_tokens['oauth_token'][0] } and approve this app. Press enter when finished."
+        puts "4. Visit https://www.dropbox.com/1/oauth/authorize?oauth_token=#{ request_tokens['oauth_token'][0] } and approve this app. Press enter when finished."
         $stdin.gets
 
         response = Unirest.post ACCESS_TOKEN_URL,
