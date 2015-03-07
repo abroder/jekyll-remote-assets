@@ -1,5 +1,6 @@
 require 'uri'
 require 'unirest'
+require 'set'
 
 module RemoteAsset
   class Generator < Jekyll::Generator
@@ -89,6 +90,8 @@ module RemoteAsset
       config_oauth(plugin_config)
       init_cache(plugin_config)
 
+      file_set = Set.new
+
       Dir.glob("_assets/**/*") do |filename|
         # begin
           next if File.directory?(filename)
@@ -97,6 +100,8 @@ module RemoteAsset
           overwrite = plugin_config['overwrite'] || true
 
           File.open(filename) do |f|
+            file_set.add filename
+
             md5 = Digest::MD5.file(filename).hexdigest
             if @cache[filename] and @cache[filename][:md5] == md5
               # if it's cached, make sure the file is still in the Dropbox drive
@@ -133,6 +138,8 @@ module RemoteAsset
          # puts 'Error'
        # end
     end
+
+    @cache.delete_if { |key, value| not file_set.include? key }
 
     # TODO: clean up file saving
     File.open(plugin_config["cache"] || __dir__ + "/.remote_assets_cache", 'w+') do |f|
