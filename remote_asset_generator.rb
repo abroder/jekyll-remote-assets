@@ -129,14 +129,15 @@ module RemoteAsset
             @cache[filename] = { md5: md5, url: "http://dl.dropboxusercontent.com#{ uri.path }"}
           end
 
-          # TODO: clean up file saving
-          File.open(plugin_config["cache"] || __dir__ + "/.remote_assets_cache", 'w+') do |f|
-            YAML.dump(@cache, f)
-          end
         # rescue
          # puts 'Error'
        # end
-     end
+    end
+
+    # TODO: clean up file saving
+    File.open(plugin_config["cache"] || __dir__ + "/.remote_assets_cache", 'w+') do |f|
+      YAML.dump(@cache, f)
+    end
    end
  end
 end
