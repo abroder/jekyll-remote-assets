@@ -114,8 +114,6 @@ module RemoteAsset
               end
             end
 
-            puts "#{ filename } wasn't cached."
-
             # upload the file
             response = Unirest.put FILES_PUT_URL + name + "?overwrite=#{ overwrite }",
               headers: {"Authorization" => build_oauth1_header(@oauth_config[:app_key], @oauth_config[:app_secret], @oauth_config[:access_token], @oauth_config[:access_token_secret]),
