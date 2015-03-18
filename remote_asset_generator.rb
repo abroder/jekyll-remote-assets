@@ -93,7 +93,7 @@ module RemoteAsset
       file_set = Set.new
 
       Dir.glob("_assets/**/*") do |filename|
-        # begin
+        begin
           next if File.directory?(filename)
 
           name = filename[filename.index('/')..-1]
@@ -133,18 +133,16 @@ module RemoteAsset
             
             @cache[filename] = { md5: md5, url: "http://dl.dropboxusercontent.com#{ uri.path }"}
           end
+        rescue
+          puts "Error uploading #{ filename }"
+        end
+      end
+      @cache.delete_if { |key, value| not file_set.include? key }
 
-        # rescue
-         # puts 'Error'
-       # end
+      # TODO: clean up file saving
+      File.open(plugin_config["cache"] || __dir__ + "/.remote_assets_cache", 'w+') do |f|
+        YAML.dump(@cache, f)
+      end
     end
-
-    @cache.delete_if { |key, value| not file_set.include? key }
-
-    # TODO: clean up file saving
-    File.open(plugin_config["cache"] || __dir__ + "/.remote_assets_cache", 'w+') do |f|
-      YAML.dump(@cache, f)
-    end
-   end
- end
+  end
 end
