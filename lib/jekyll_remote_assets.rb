@@ -35,7 +35,7 @@ module Jekyll
 
       def config_oauth(plugin_config)
         @oauth_config = {}
-        config_file = plugin_config["config"] || __dir__ + "/.remote_assets_config"
+        config_file = plugin_config["config"]
         if not File.exist?(config_file)
           puts "1. Create a new application on the Dropbox App Console, if you haven't already: https://www.dropbox.com/developers/apps"
           $stdin.gets
@@ -74,7 +74,7 @@ module Jekyll
 
       def init_cache(plugin_config)
         @cache = {}
-        cache_file = plugin_config["cache"] || __dir__ + "/.remote_assets_cache"
+        cache_file = plugin_config["cache"]
 
         # TODO: fix first-time set up of cache
         if not File.exist?(cache_file)
@@ -110,6 +110,9 @@ module Jekyll
 
       def generate(site)
         plugin_config = site.config["remote_assets"] || {}
+        plugin_config["config"] ||= site.source + "/.remote_assets_config"
+        plugin_config["cache"] ||= site.source  + "/.remote_assets_cache"
+
         config_oauth(plugin_config)
         init_cache(plugin_config)
 
@@ -160,8 +163,7 @@ module Jekyll
         end
         @cache.delete_if { |key, value| not file_set.include? key }
 
-        # TODO: clean up file saving
-        File.open(plugin_config["cache"] || __dir__ + "/.remote_assets_cache", 'w+') do |f|
+        File.open(plugin_config["cache"], 'w+') do |f|
           YAML.dump(@cache, f)
         end
       end
