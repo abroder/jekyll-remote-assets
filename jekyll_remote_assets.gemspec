@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'jekyll_remote_assets'
-  s.version     = '0.1.0'
+  s.version     = '0.1.1'
   s.date        = '2015-03-21'
   s.summary     = "Automatically upload static assets to Dropbox on site generation to save on server costs"
   s.authors     = ["Aaron Broder"]
